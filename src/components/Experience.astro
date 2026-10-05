@@ -1,0 +1,134 @@
+---
+import { t, type Lang } from '../data/content';
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const e = t[lang].experience;
+---
+
+<section class="wrap section" id="experience" aria-labelledby="experience-title">
+  <div class="section-head">
+    <h2 class="h2" id="experience-title">{e.title}</h2>
+  </div>
+
+  <ol class="timeline">
+    {
+      e.jobs.map((job, i) => (
+        <li class={`job ${i === 0 ? 'current' : ''}`} id={job.id}>
+          <div class="when mono">{job.dates}</div>
+          <div class="what">
+            <h3>
+              {job.role} <span class="org">· {job.org}</span>
+            </h3>
+            <p class="context">{job.context}</p>
+            <ul class="bullets">
+              {job.bullets.map(([lead, text]) => (
+                <li>
+                  {lead && <strong>{lead} </strong>}
+                  {text}
+                </li>
+              ))}
+            </ul>
+            {job.chips.length > 0 && (
+              <ul class="chips">
+                {job.chips.map((c) => (
+                  <li class="chip">{c}</li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </li>
+      ))
+    }
+  </ol>
+</section>
+
+<style>
+  .timeline {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-left: 1px solid var(--line);
+  }
+  .job {
+    position: relative;
+    display: grid;
+    grid-template-columns: 180px minmax(0, 1fr);
+    gap: 24px;
+    padding: 0 0 48px 32px;
+  }
+  .job:last-child {
+    padding-bottom: 0;
+  }
+  .job::before {
+    content: '';
+    position: absolute;
+    left: -6px;
+    top: 7px;
+    width: 11px;
+    height: 11px;
+    border-radius: 999px;
+    background: var(--bg);
+    border: 2px solid var(--muted);
+  }
+  .job.current::before {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+  .when {
+    font-size: 13px;
+    color: var(--muted);
+    padding-top: 3px;
+  }
+  .what {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-width: 760px;
+  }
+  h3 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    line-height: 1.3;
+  }
+  .org {
+    font-weight: 500;
+    color: var(--muted);
+  }
+  .context {
+    margin: -6px 0 0;
+    font-size: 14px;
+    color: var(--muted);
+  }
+  .bullets {
+    list-style: disc;
+    margin: 0;
+    padding-left: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    line-height: 1.6;
+  }
+  .bullets li::marker {
+    color: var(--muted);
+  }
+  .bullets strong {
+    font-weight: 600;
+  }
+  .chips {
+    margin-top: 4px;
+  }
+  @media (max-width: 720px) {
+    .job {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 6px;
+      padding-left: 22px;
+    }
+    h3 {
+      font-size: 18px;
+    }
+  }
+</style>

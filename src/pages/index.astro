@@ -1,0 +1,26 @@
+---
+// Root: send Dutch browsers to /nl/, everyone else to /en/.
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Munzur Atak · AI & Software Engineer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="canonical" href="https://munzuratak.github.io/en/" />
+    <link rel="alternate" hreflang="en" href="https://munzuratak.github.io/en/" />
+    <link rel="alternate" hreflang="nl" href="https://munzuratak.github.io/nl/" />
+    <meta http-equiv="refresh" content="1; url=/en/" />
+    <script is:inline>
+      (function () {
+        var langs = navigator.languages || [navigator.language || 'en'];
+        var nl = langs.some(function (l) { return /^nl\b/i.test(l); });
+        location.replace(nl ? '/nl/' : '/en/');
+      })();
+    </script>
+  </head>
+  <body>
+    <p><a href="/en/">English</a> · <a href="/nl/">Nederlands</a></p>
+  </body>
+</html>

@@ -1,0 +1,102 @@
+---
+import { t, type Lang } from '../data/content';
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const ed = t[lang].education;
+---
+
+<section class="wrap section" id="education" aria-labelledby="education-title">
+  <div class="section-head">
+    <h2 class="h2" id="education-title">{ed.title}</h2>
+  </div>
+  <div class="edu">
+    <ul class="items">
+      {
+        ed.items.map((it) => (
+          <li>
+            <div>
+              <h3>{it.name}</h3>
+              <p class="org">{it.org}</p>
+              {it.note && (
+                <a class="note" href="#research">
+                  {it.note}
+                </a>
+              )}
+            </div>
+            <span class="mono when">{it.dates}</span>
+          </li>
+        ))
+      }
+    </ul>
+    <div class="langs">
+      <h3>{ed.languagesTitle}</h3>
+      <p>{ed.languages}</p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .edu {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+    gap: 24px 56px;
+  }
+  .items {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid var(--line);
+  }
+  .items li {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 16px;
+    padding: 18px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  .org {
+    margin: 2px 0 0;
+    color: var(--muted);
+  }
+  .note {
+    display: inline-block;
+    margin-top: 6px;
+    font-size: 14px;
+    color: var(--accent);
+    text-decoration: none;
+  }
+  .note:hover {
+    text-decoration: underline;
+  }
+  .when {
+    font-size: 13px;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+  .langs {
+    border-top: 1px solid var(--line);
+    padding-top: 18px;
+  }
+  .langs p {
+    margin: 6px 0 0;
+    color: var(--muted);
+  }
+  @media (max-width: 760px) {
+    .edu {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .items li {
+      flex-direction: column;
+      gap: 4px;
+    }
+  }
+</style>

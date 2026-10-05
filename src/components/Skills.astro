@@ -1,0 +1,179 @@
+---
+import { t, skillGroups, refs, skillName, type Lang } from '../data/content';
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const sk = t[lang].skills;
+let uid = 0;
+---
+
+<section class="wrap section" id="skills" aria-labelledby="skills-title">
+  <div class="section-head">
+    <h2 class="h2" id="skills-title">{sk.title}</h2>
+    <p class="lead">{sk.intro}</p>
+  </div>
+
+  <div class="groups">
+    {
+      skillGroups.map((g) => (
+        <div class="group">
+          <h3 class="mono">{g.title[lang]}</h3>
+          <ul class="skills">
+            {g.items.map((item) => {
+              const id = `skill-${uid++}`;
+              const name = skillName(item, lang);
+              return item.refs.length ? (
+                <li class="skill has-refs">
+                  <button type="button" class="tag" aria-describedby={id} aria-expanded="false">
+                    {name}
+                  </button>
+                  <span class="pop" id={id} role="tooltip">
+                    <span class="pop-label mono">{sk.usedIn}</span>
+                    {item.refs.map((k) => (
+                      <a href={refs[k].href}>{refs[k][lang]}</a>
+                    ))}
+                  </span>
+                </li>
+              ) : (
+                <li class="skill">
+                  <span class="tag plain">{name}</span>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      ))
+    }
+  </div>
+</section>
+
+<style>
+  .groups {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
+    gap: 32px 40px;
+  }
+  .group h3 {
+    margin: 0 0 14px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--muted);
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--line);
+  }
+  .skills {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .skill {
+    position: relative;
+  }
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 40px;
+    padding: 8px 14px;
+    border-radius: 20px;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    color: var(--ink);
+    font: inherit;
+    font-size: 14.5px;
+    line-height: 1.2;
+    text-align: left;
+  }
+  button.tag {
+    cursor: pointer;
+  }
+  button.tag::after {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 999px;
+    background: var(--accent);
+    flex: none;
+  }
+  button.tag:hover,
+  .skill.open button.tag {
+    border-color: var(--ink);
+  }
+  .tag.plain {
+    color: var(--muted);
+  }
+  .pop {
+    position: absolute;
+    left: 0;
+    top: calc(100% + 6px);
+    z-index: 4;
+    min-width: 200px;
+    max-width: 280px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    display: none;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 14px;
+  }
+  .pop::before {
+    /* hover bridge so the pointer can travel from tag to popover */
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: -8px;
+    height: 8px;
+  }
+  .pop-label {
+    font-size: 11.5px;
+    color: var(--muted);
+  }
+  .pop a {
+    color: var(--accent);
+    text-decoration: none;
+    padding: 4px 0;
+  }
+  .pop a:hover {
+    text-decoration: underline;
+  }
+  .skill.has-refs:hover .pop,
+  .skill.has-refs:focus-within .pop,
+  .skill.open .pop {
+    display: flex;
+  }
+</style>
+
+<script>
+  // Tap/click toggles the "used in" popover (hover and focus also show it via CSS).
+  document.querySelectorAll<HTMLButtonElement>('.skill.has-refs > button').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const li = btn.parentElement!;
+      const open = !li.classList.contains('open');
+      document.querySelectorAll('.skill.open').forEach((o) => {
+        o.classList.remove('open');
+        o.querySelector('button')?.setAttribute('aria-expanded', 'false');
+      });
+      li.classList.toggle('open', open);
+      btn.setAttribute('aria-expanded', String(open));
+    });
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      document.querySelectorAll('.skill.open').forEach((o) => o.classList.remove('open'));
+      (document.activeElement as HTMLElement | null)?.blur();
+    }
+  });
+  document.addEventListener('click', (e) => {
+    if (!(e.target as HTMLElement).closest('.skill')) {
+      document.querySelectorAll('.skill.open').forEach((o) => o.classList.remove('open'));
+    }
+  });
+</script>

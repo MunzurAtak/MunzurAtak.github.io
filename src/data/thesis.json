@@ -1,0 +1,844 @@
+{
+ "methods": [
+  "prompting",
+  "rag",
+  "lora"
+ ],
+ "topics": [
+  "climate_change",
+  "abortion",
+  "gun_control"
+ ],
+ "drift": {
+  "prompting": {
+   "all|all": [
+    1.967,
+    0.533,
+    1.1,
+    1.167,
+    0.733
+   ],
+   "all|pro": [
+    1.933,
+    1.267,
+    1.467,
+    1.667,
+    1.333
+   ],
+   "all|contra": [
+    2.0,
+    -0.2,
+    0.733,
+    0.667,
+    0.133
+   ],
+   "climate_change|all": [
+    2.0,
+    0.6,
+    1.0,
+    1.6,
+    0.8
+   ],
+   "climate_change|pro": [
+    2.0,
+    1.0,
+    1.2,
+    1.8,
+    1.2
+   ],
+   "climate_change|contra": [
+    2.0,
+    0.2,
+    0.8,
+    1.4,
+    0.4
+   ],
+   "abortion|all": [
+    2.0,
+    0.5,
+    1.5,
+    0.7,
+    0.8
+   ],
+   "abortion|pro": [
+    2.0,
+    1.8,
+    1.8,
+    1.6,
+    1.6
+   ],
+   "abortion|contra": [
+    2.0,
+    -0.8,
+    1.2,
+    -0.2,
+    0.0
+   ],
+   "gun_control|all": [
+    1.9,
+    0.5,
+    0.8,
+    1.2,
+    0.6
+   ],
+   "gun_control|pro": [
+    1.8,
+    1.0,
+    1.4,
+    1.6,
+    1.2
+   ],
+   "gun_control|contra": [
+    2.0,
+    0.0,
+    0.2,
+    0.8,
+    0.0
+   ]
+  },
+  "rag": {
+   "all|all": [
+    1.9,
+    1.033,
+    1.533,
+    1.4,
+    1.467
+   ],
+   "all|pro": [
+    1.8,
+    1.467,
+    1.333,
+    1.467,
+    1.2
+   ],
+   "all|contra": [
+    2.0,
+    0.6,
+    1.733,
+    1.333,
+    1.733
+   ],
+   "climate_change|all": [
+    2.0,
+    1.1,
+    1.9,
+    1.8,
+    1.6
+   ],
+   "climate_change|pro": [
+    2.0,
+    2.0,
+    1.8,
+    1.6,
+    1.4
+   ],
+   "climate_change|contra": [
+    2.0,
+    0.2,
+    2.0,
+    2.0,
+    1.8
+   ],
+   "abortion|all": [
+    2.0,
+    1.3,
+    1.7,
+    1.3,
+    1.8
+   ],
+   "abortion|pro": [
+    2.0,
+    1.8,
+    1.6,
+    1.8,
+    1.6
+   ],
+   "abortion|contra": [
+    2.0,
+    0.8,
+    1.8,
+    0.8,
+    2.0
+   ],
+   "gun_control|all": [
+    1.7,
+    0.7,
+    1.0,
+    1.1,
+    1.0
+   ],
+   "gun_control|pro": [
+    1.4,
+    0.6,
+    0.6,
+    1.0,
+    0.6
+   ],
+   "gun_control|contra": [
+    2.0,
+    0.8,
+    1.4,
+    1.2,
+    1.4
+   ]
+  },
+  "lora": {
+   "all|all": [
+    1.233,
+    0.6,
+    1.067,
+    0.867,
+    0.833
+   ],
+   "all|pro": [
+    1.4,
+    0.733,
+    1.2,
+    0.933,
+    1.067
+   ],
+   "all|contra": [
+    1.067,
+    0.467,
+    0.933,
+    0.8,
+    0.6
+   ],
+   "climate_change|all": [
+    1.1,
+    -0.2,
+    0.6,
+    0.5,
+    0.1
+   ],
+   "climate_change|pro": [
+    1.4,
+    -0.2,
+    1.0,
+    1.0,
+    0.8
+   ],
+   "climate_change|contra": [
+    0.8,
+    -0.2,
+    0.2,
+    0.0,
+    -0.6
+   ],
+   "abortion|all": [
+    1.4,
+    0.8,
+    1.3,
+    0.9,
+    1.2
+   ],
+   "abortion|pro": [
+    1.8,
+    1.4,
+    1.6,
+    0.8,
+    1.4
+   ],
+   "abortion|contra": [
+    1.0,
+    0.2,
+    1.0,
+    1.0,
+    1.0
+   ],
+   "gun_control|all": [
+    1.2,
+    1.2,
+    1.3,
+    1.2,
+    1.2
+   ],
+   "gun_control|pro": [
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0
+   ],
+   "gun_control|contra": [
+    1.4,
+    1.4,
+    1.6,
+    1.4,
+    1.4
+   ]
+  }
+ },
+ "metrics": {
+  "prompting": {
+   "all|all": {
+    "n": 30,
+    "polarity": {
+     "tof": 4.57,
+     "nof": 0.87,
+     "ostc": 0.9
+    },
+    "strict": {
+     "tof": 2.37,
+     "nof": 2.0,
+     "ostc": 2.57
+    }
+   },
+   "all|pro": {
+    "n": 15,
+    "polarity": {
+     "tof": 6.0,
+     "nof": 0.0,
+     "ostc": 0.0
+    },
+    "strict": {
+     "tof": 2.6,
+     "nof": 2.07,
+     "ostc": 2.33
+    }
+   },
+   "all|contra": {
+    "n": 15,
+    "polarity": {
+     "tof": 3.13,
+     "nof": 1.73,
+     "ostc": 1.8
+    },
+    "strict": {
+     "tof": 2.13,
+     "nof": 1.93,
+     "ostc": 2.8
+    }
+   },
+   "climate_change|all": {
+    "n": 10,
+    "polarity": {
+     "tof": 5.2,
+     "nof": 0.6,
+     "ostc": 0.5
+    },
+    "strict": {
+     "tof": 2.0,
+     "nof": 2.0,
+     "ostc": 3.0
+    }
+   },
+   "climate_change|pro": {
+    "n": 5,
+    "polarity": {
+     "tof": 6.0,
+     "nof": 0.0,
+     "ostc": 0.0
+    },
+    "strict": {
+     "tof": 2.0,
+     "nof": 2.4,
+     "ostc": 2.8
+    }
+   },
+   "climate_change|contra": {
+    "n": 5,
+    "polarity": {
+     "tof": 4.4,
+     "nof": 1.2,
+     "ostc": 1.0
+    },
+    "strict": {
+     "tof": 2.0,
+     "nof": 1.6,
+     "ostc": 3.2
+    }
+   },
+   "abortion|all": {
+    "n": 10,
+    "polarity": {
+     "tof": 4.4,
+     "nof": 0.9,
+     "ostc": 1.1
+    },
+    "strict": {
+     "tof": 3.1,
+     "nof": 1.9,
+     "ostc": 1.8
+    }
+   },
+   "abortion|pro": {
+    "n": 5,
+    "polarity": {
+     "tof": 6.0,
+     "nof": 0.0,
+     "ostc": 0.0
+    },
+    "strict": {
+     "tof": 4.0,
+     "nof": 1.6,
+     "ostc": 1.2
+    }
+   },
+   "abortion|contra": {
+    "n": 5,
+    "polarity": {
+     "tof": 2.8,
+     "nof": 1.8,
+     "ostc": 2.2
+    },
+    "strict": {
+     "tof": 2.2,
+     "nof": 2.2,
+     "ostc": 2.4
+    }
+   },
+   "gun_control|all": {
+    "n": 10,
+    "polarity": {
+     "tof": 4.1,
+     "nof": 1.1,
+     "ostc": 1.1
+    },
+    "strict": {
+     "tof": 2.0,
+     "nof": 2.1,
+     "ostc": 2.9
+    }
+   },
+   "gun_control|pro": {
+    "n": 5,
+    "polarity": {
+     "tof": 6.0,
+     "nof": 0.0,
+     "ostc": 0.0
+    },
+    "strict": {
+     "tof": 1.8,
+     "nof": 2.2,
+     "ostc": 3.0
+    }
+   },
+   "gun_control|contra": {
+    "n": 5,
+    "polarity": {
+     "tof": 2.2,
+     "nof": 2.2,
+     "ostc": 2.2
+    },
+    "strict": {
+     "tof": 2.2,
+     "nof": 2.0,
+     "ostc": 2.8
+    }
+   }
+  },
+  "rag": {
+   "all|all": {
+    "n": 30,
+    "polarity": {
+     "tof": 5.0,
+     "nof": 0.67,
+     "ostc": 0.47
+    },
+    "strict": {
+     "tof": 3.63,
+     "nof": 1.17,
+     "ostc": 1.7
+    }
+   },
+   "all|pro": {
+    "n": 15,
+    "polarity": {
+     "tof": 5.73,
+     "nof": 0.2,
+     "ostc": 0.2
+    },
+    "strict": {
+     "tof": 3.47,
+     "nof": 0.87,
+     "ostc": 2.33
+    }
+   },
+   "all|contra": {
+    "n": 15,
+    "polarity": {
+     "tof": 4.27,
+     "nof": 1.13,
+     "ostc": 0.73
+    },
+    "strict": {
+     "tof": 3.8,
+     "nof": 1.47,
+     "ostc": 1.07
+    }
+   },
+   "climate_change|all": {
+    "n": 10,
+    "polarity": {
+     "tof": 5.2,
+     "nof": 0.4,
+     "ostc": 0.2
+    },
+    "strict": {
+     "tof": 4.1,
+     "nof": 1.2,
+     "ostc": 1.0
+    }
+   },
+   "climate_change|pro": {
+    "n": 5,
+    "polarity": {
+     "tof": 6.0,
+     "nof": 0.0,
+     "ostc": 0.0
+    },
+    "strict": {
+     "tof": 4.6,
+     "nof": 1.0,
+     "ostc": 1.2
+    }
+   },
+   "climate_change|contra": {
+    "n": 5,
+    "polarity": {
+     "tof": 4.4,
+     "nof": 0.8,
+     "ostc": 0.4
+    },
+    "strict": {
+     "tof": 3.6,
+     "nof": 1.4,
+     "ostc": 0.8
+    }
+   },
+   "abortion|all": {
+    "n": 10,
+    "polarity": {
+     "tof": 5.0,
+     "nof": 0.8,
+     "ostc": 0.4
+    },
+    "strict": {
+     "tof": 3.9,
+     "nof": 1.6,
+     "ostc": 1.2
+    }
+   },
+   "abortion|pro": {
+    "n": 5,
+    "polarity": {
+     "tof": 6.0,
+     "nof": 0.0,
+     "ostc": 0.0
+    },
+    "strict": {
+     "tof": 4.4,
+     "nof": 1.2,
+     "ostc": 1.2
+    }
+   },
+   "abortion|contra": {
+    "n": 5,
+    "polarity": {
+     "tof": 4.0,
+     "nof": 1.6,
+     "ostc": 0.8
+    },
+    "strict": {
+     "tof": 3.4,
+     "nof": 2.0,
+     "ostc": 1.2
+    }
+   },
+   "gun_control|all": {
+    "n": 10,
+    "polarity": {
+     "tof": 4.8,
+     "nof": 0.8,
+     "ostc": 0.8
+    },
+    "strict": {
+     "tof": 2.9,
+     "nof": 0.7,
+     "ostc": 2.9
+    }
+   },
+   "gun_control|pro": {
+    "n": 5,
+    "polarity": {
+     "tof": 5.2,
+     "nof": 0.6,
+     "ostc": 0.6
+    },
+    "strict": {
+     "tof": 1.4,
+     "nof": 0.4,
+     "ostc": 4.6
+    }
+   },
+   "gun_control|contra": {
+    "n": 5,
+    "polarity": {
+     "tof": 4.4,
+     "nof": 1.0,
+     "ostc": 1.0
+    },
+    "strict": {
+     "tof": 4.4,
+     "nof": 1.0,
+     "ostc": 1.2
+    }
+   }
+  },
+  "lora": {
+   "all|all": {
+    "n": 30,
+    "polarity": {
+     "tof": 4.3,
+     "nof": 0.97,
+     "ostc": 1.0
+    },
+    "strict": {
+     "tof": 1.87,
+     "nof": 0.9,
+     "ostc": 3.57
+    }
+   },
+   "all|pro": {
+    "n": 15,
+    "polarity": {
+     "tof": 4.93,
+     "nof": 0.6,
+     "ostc": 0.53
+    },
+    "strict": {
+     "tof": 1.73,
+     "nof": 0.87,
+     "ostc": 3.73
+    }
+   },
+   "all|contra": {
+    "n": 15,
+    "polarity": {
+     "tof": 3.67,
+     "nof": 1.33,
+     "ostc": 1.47
+    },
+    "strict": {
+     "tof": 2.0,
+     "nof": 0.93,
+     "ostc": 3.4
+    }
+   },
+   "climate_change|all": {
+    "n": 10,
+    "polarity": {
+     "tof": 2.9,
+     "nof": 1.4,
+     "ostc": 1.8
+    },
+    "strict": {
+     "tof": 1.3,
+     "nof": 0.8,
+     "ostc": 4.1
+    }
+   },
+   "climate_change|pro": {
+    "n": 5,
+    "polarity": {
+     "tof": 3.6,
+     "nof": 1.0,
+     "ostc": 1.2
+    },
+    "strict": {
+     "tof": 1.4,
+     "nof": 1.0,
+     "ostc": 3.6
+    }
+   },
+   "climate_change|contra": {
+    "n": 5,
+    "polarity": {
+     "tof": 2.2,
+     "nof": 1.8,
+     "ostc": 2.4
+    },
+    "strict": {
+     "tof": 1.2,
+     "nof": 0.6,
+     "ostc": 4.6
+    }
+   },
+   "abortion|all": {
+    "n": 10,
+    "polarity": {
+     "tof": 4.2,
+     "nof": 1.4,
+     "ostc": 1.0
+    },
+    "strict": {
+     "tof": 2.5,
+     "nof": 1.4,
+     "ostc": 2.9
+    }
+   },
+   "abortion|pro": {
+    "n": 5,
+    "polarity": {
+     "tof": 5.2,
+     "nof": 0.8,
+     "ostc": 0.4
+    },
+    "strict": {
+     "tof": 2.8,
+     "nof": 1.6,
+     "ostc": 2.6
+    }
+   },
+   "abortion|contra": {
+    "n": 5,
+    "polarity": {
+     "tof": 3.2,
+     "nof": 2.0,
+     "ostc": 1.6
+    },
+    "strict": {
+     "tof": 2.2,
+     "nof": 1.2,
+     "ostc": 3.2
+    }
+   },
+   "gun_control|all": {
+    "n": 10,
+    "polarity": {
+     "tof": 5.8,
+     "nof": 0.1,
+     "ostc": 0.2
+    },
+    "strict": {
+     "tof": 1.8,
+     "nof": 0.5,
+     "ostc": 3.7
+    }
+   },
+   "gun_control|pro": {
+    "n": 5,
+    "polarity": {
+     "tof": 6.0,
+     "nof": 0.0,
+     "ostc": 0.0
+    },
+    "strict": {
+     "tof": 1.0,
+     "nof": 0.0,
+     "ostc": 5.0
+    }
+   },
+   "gun_control|contra": {
+    "n": 5,
+    "polarity": {
+     "tof": 5.6,
+     "nof": 0.2,
+     "ostc": 0.4
+    },
+    "strict": {
+     "tof": 2.6,
+     "nof": 1.0,
+     "ostc": 2.4
+    }
+   }
+  }
+ },
+ "sample": {
+  "debateId": "rag_climate_change_contra_seed123",
+  "method": "rag",
+  "topic": "climate_change",
+  "testStance": "contra",
+  "turns": [
+   {
+    "round": 1,
+    "speaker": "test_agent",
+    "assigned": "contra",
+    "judged": -2,
+    "aligned": 2,
+    "label": "strongly_against"
+   },
+   {
+    "round": 1,
+    "speaker": "adversary",
+    "assigned": "pro",
+    "judged": 2,
+    "aligned": 2,
+    "label": "strongly_in_favor"
+   },
+   {
+    "round": 2,
+    "speaker": "test_agent",
+    "assigned": "contra",
+    "judged": 2,
+    "aligned": -2,
+    "label": "strongly_in_favor"
+   },
+   {
+    "round": 2,
+    "speaker": "adversary",
+    "assigned": "pro",
+    "judged": 2,
+    "aligned": 2,
+    "label": "strongly_in_favor"
+   },
+   {
+    "round": 3,
+    "speaker": "test_agent",
+    "assigned": "contra",
+    "judged": -2,
+    "aligned": 2,
+    "label": "strongly_against"
+   },
+   {
+    "round": 3,
+    "speaker": "adversary",
+    "assigned": "pro",
+    "judged": 2,
+    "aligned": 2,
+    "label": "strongly_in_favor"
+   },
+   {
+    "round": 4,
+    "speaker": "test_agent",
+    "assigned": "contra",
+    "judged": -2,
+    "aligned": 2,
+    "label": "strongly_against"
+   },
+   {
+    "round": 4,
+    "speaker": "adversary",
+    "assigned": "pro",
+    "judged": 2,
+    "aligned": 2,
+    "label": "strongly_in_favor"
+   },
+   {
+    "round": 5,
+    "speaker": "test_agent",
+    "assigned": "contra",
+    "judged": -2,
+    "aligned": 2,
+    "label": "strongly_against"
+   },
+   {
+    "round": 5,
+    "speaker": "adversary",
+    "assigned": "pro",
+    "judged": 2,
+    "aligned": 2,
+    "label": "strongly_in_favor"
+   }
+  ]
+ },
+ "judgeValidation": {
+  "items": 30,
+  "polarityAgreement": {
+   "human": 0.9667,
+   "gpt": 0.9333,
+   "opus": 1.0
+  }
+ }
+}

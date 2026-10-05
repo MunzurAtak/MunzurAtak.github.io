@@ -1,0 +1,219 @@
+---
+import { t, links, type Lang } from '../data/content';
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const p = t[lang].projects;
+const codeIcon = '<path d="M16 18l6-6-6-6M8 6l-6 6 6 6"></path>';
+---
+
+<section class="wrap section" id="projects" aria-labelledby="projects-title">
+  <div class="section-head">
+    <h2 class="h2" id="projects-title">{p.title}</h2>
+  </div>
+
+  <div class="projects">
+    <article class="card big" id="contextai">
+      <div class="body">
+        <h3>{p.contextai.name}</h3>
+        <p class="tagline">{p.contextai.tagline}</p>
+        <ol class="pipeline mono" aria-label="Pipeline">
+          {
+            p.pipeline.map((stage, i) => (
+              <li style={`--i:${i}`}>
+                <span>{stage}</span>
+              </li>
+            ))
+          }
+        </ol>
+        <p>{p.contextai.body}</p>
+        <details>
+          <summary>{p.contextai.decisionsTitle}</summary>
+          <ul>
+            {
+              p.contextai.decisions.map(([lead, text]) => (
+                <li>
+                  <strong>{lead}</strong> {text}
+                </li>
+              ))
+            }
+          </ul>
+        </details>
+      </div>
+      <div class="foot">
+        <ul class="chips">{p.contextai.chips.map((c) => <li class="chip">{c}</li>)}</ul>
+        <a class="btn" href={links.contextai}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={codeIcon} />
+          {p.code}
+        </a>
+      </div>
+    </article>
+
+    <article class="card small" id="mlapi">
+      <div class="body">
+        <h3>{p.mlapi.name}</h3>
+        <p class="tagline">{p.mlapi.tagline}</p>
+        <p>{p.mlapi.body}</p>
+      </div>
+      <div class="foot">
+        <ul class="chips">{p.mlapi.chips.map((c) => <li class="chip">{c}</li>)}</ul>
+        <a class="btn" href={links.mlapi}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={codeIcon} />
+          {p.code}
+        </a>
+      </div>
+    </article>
+  </div>
+</section>
+
+<style>
+  .projects {
+    display: grid;
+    grid-template-columns: minmax(0, 8fr) minmax(0, 4fr);
+    gap: 20px;
+    align-items: stretch;
+  }
+  .card {
+    padding: clamp(20px, 3vw, 32px);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 24px;
+  }
+  .body {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .body p {
+    margin: 0;
+    line-height: 1.65;
+    max-width: 68ch;
+  }
+  h3 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+  .small h3 {
+    font-size: 20px;
+  }
+  .tagline {
+    color: var(--muted);
+  }
+  .foot {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    align-items: flex-start;
+  }
+
+  .pipeline {
+    list-style: none;
+    margin: 6px 0;
+    padding: 16px;
+    border-radius: 12px;
+    background: var(--bg);
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0;
+    font-size: 13px;
+  }
+  .pipeline li {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  .pipeline li span {
+    display: block;
+    width: 100%;
+    text-align: center;
+    padding: 12px 6px;
+    border: 1.5px solid var(--ink);
+    border-radius: 8px;
+    background: var(--surface);
+    margin-right: 22px;
+  }
+  .pipeline li:last-child span {
+    margin-right: 0;
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--on-accent);
+  }
+  .pipeline li:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    right: 6px;
+    top: 50%;
+    width: 10px;
+    height: 10px;
+    border-top: 1.5px solid var(--muted);
+    border-right: 1.5px solid var(--muted);
+    transform: translateY(-50%) rotate(45deg);
+  }
+
+  details {
+    border-top: 1px solid var(--line);
+    padding-top: 12px;
+  }
+  summary {
+    cursor: pointer;
+    font-weight: 500;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    list-style: none;
+    gap: 10px;
+  }
+  summary::-webkit-details-marker {
+    display: none;
+  }
+  summary::before {
+    content: '+';
+    font-family: var(--font-mono);
+    width: 22px;
+    height: 22px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    display: grid;
+    place-items: center;
+    color: var(--muted);
+  }
+  details[open] summary::before {
+    content: '−';
+  }
+  details ul {
+    margin: 4px 0 0;
+    padding-left: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+  details strong {
+    color: var(--ink);
+    font-weight: 500;
+  }
+
+  @media (max-width: 900px) {
+    .projects {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+  @media (max-width: 520px) {
+    .pipeline {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      row-gap: 10px;
+      font-size: 12px;
+    }
+    .pipeline li:nth-child(2) span {
+      margin-right: 0;
+    }
+    .pipeline li:nth-child(2)::after {
+      display: none;
+    }
+  }
+</style>

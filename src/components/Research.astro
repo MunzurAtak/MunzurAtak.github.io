@@ -1,0 +1,753 @@
+---
+import { t, links, type Lang } from '../data/content';
+import data from '../data/thesis.json';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const r = t[lang].research;
+const methods = data.methods as ('prompting' | 'rag' | 'lora')[];
+
+// Chart geometry (shared with the client script below)
+const W = 640, H = 330, L = 44, R = 36, T = 36, B = 40;
+const x = (i: number) => L + (i * (W - L - R)) / 4;
+const y = (v: number) => T + ((2 - v) * (H - T - B)) / 4;
+const path = (vals: number[]) => vals.map((v, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(' ');
+
+const initialKey = 'all|all';
+const fmt = (n: number) => (lang === 'nl' ? n.toFixed(2).replace('.', ',') : n.toFixed(2));
+const best = (key: 'tof' | 'nof' | 'ostc', mode: 'polarity' | 'strict', k = initialKey) => {
+  const vals = methods.map((m) => (data.metrics as any)[m][k][mode][key] as number);
+  return key === 'tof' ? Math.max(...vals) : Math.min(...vals);
+};
+const metricKeys = ['tof', 'nof', 'ostc'] as const;
+const short = { tof: 'ToF', nof: 'NoF', ostc: 'OST' };
+const sample = data.sample.turns;
+const rounds = [1, 2, 3, 4, 5].map((n) => ({
+  n,
+  test: sample.find((s) => s.round === n && s.speaker === 'test_agent')!,
+  opp: sample.find((s) => s.round === n && s.speaker === 'adversary')!,
+}));
+const signed = (v: number) => (v > 0 ? `+${v}` : v < 0 ? `−${Math.abs(v)}` : '0');
+
+const i18n = {
+  lang,
+  methods: r.methods,
+  best: r.chart.best,
+  debates: r.chart.debates,
+  round: r.chart.round,
+};
+---
+
+<section class="wrap section" id="research" aria-labelledby="research-title">
+  <div class="section-head">
+    <p class="eyebrow">{r.label}</p>
+    <h2 class="h2" id="research-title">{r.title}</h2>
+    <p class="mono sub">{r.sub}</p>
+    <p class="lead">{r.intro}</p>
+  </div>
+
+  <div class="grid">
+    <!-- Replay of one real debate -->
+    <figure class="card replay" id="replay">
+      <div class="card-head">
+        <h3>{r.replay.title}</h3>
+        <button class="btn btn-sm" type="button" id="replay-btn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"></path><path d="M3 3v5h5"></path></svg>
+          {r.replay.play}
+        </button>
+      </div>
+      <div class="legend mono">
+        <span><i class="sw" style="background:var(--accent)"></i>{r.replay.test} · {r.replay.onStance}</span>
+        <span><i class="sw" style="background:var(--warn)"></i>{r.replay.offStance}</span>
+        <span><i class="sw" style="background:var(--neutral)"></i>{r.replay.opp}</span>
+      </div>
+      <ol class="rounds">
+        {
+          rounds.map((rd, i) => {
+            const on = rd.test.aligned > 0;
+            return (
+              <li class="rd" style={`--i:${i}`}>
+                <span class={`bub bub-a ${on ? '' : 'off'}`}>
+                  <span class="sr-only">{r.replay.test}: </span>
+                  {signed(rd.test.judged)}
+                </span>
+                <span class="bub bub-b">
+                  <span class="sr-only">{r.replay.opp}: </span>
+                  {signed(rd.opp.judged)}
+                </span>
+                <span class={`judge ${on ? '' : 'off'}`} title={`${r.replay.judge}: ${on ? r.replay.onStance : r.replay.offStance}`}>
+                  {on ? (
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5L20 7" /></svg>
+                  ) : (
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
+                  )}
+                  <span class="sr-only">{r.replay.judge}: {on ? r.replay.onStance : r.replay.offStance}</span>
+                </span>
+                <span class="r mono">{r.replay.round} {rd.n}</span>
+              </li>
+            );
+          })
+        }
+      </ol>
+      <figcaption>{r.replay.caption}</figcaption>
+    </figure>
+
+    <!-- Drift chart -->
+    <figure class="card chart" id="drift">
+      <div class="card-head">
+        <h3>{r.chart.title}</h3>
+      </div>
+      <div class="controls">
+        <div class="seg" role="group" aria-label={r.chart.topic} data-filter="topic">
+          <span class="seg-label mono">{r.chart.topic}</span>
+          <button type="button" data-value="all" aria-pressed="true">{r.chart.all}</button>
+          {data.topics.map((tp) => <button type="button" data-value={tp} aria-pressed="false">{(r.chart.topics as any)[tp]}</button>)}
+        </div>
+        <div class="seg" role="group" aria-label={r.chart.stance} data-filter="stance">
+          <span class="seg-label mono">{r.chart.stance}</span>
+          <button type="button" data-value="all" aria-pressed="true">{r.chart.all}</button>
+          <button type="button" data-value="pro" aria-pressed="false">{r.chart.pro}</button>
+          <button type="button" data-value="contra" aria-pressed="false">{r.chart.contra}</button>
+        </div>
+      </div>
+
+      <div class="svg-box">
+        <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-labelledby="drift-desc" class="plot">
+          <desc id="drift-desc">{r.chart.caption}</desc>
+          {[-2, -1, 0, 1, 2].map((v) => (
+            <g>
+              <line x1={L} x2={W - R} y1={y(v)} y2={y(v)} class={v === 0 ? 'axis0' : 'gridline'} />
+              <text x={L - 10} y={y(v) + 4} text-anchor="end" class="tick">{v > 0 ? `+${v}` : v < 0 ? `−${-v}` : '0'}</text>
+            </g>
+          ))}
+          {[0, 1, 2, 3, 4].map((i) => (
+            <text x={x(i)} y={H - 14} text-anchor="middle" class="tick">{r.chart.round} {i + 1}</text>
+          ))}
+          <text x={L} y={14} class="ylab">↑ {r.chart.yTop}</text>
+          <text x={L + 8} y={y(-2) - 8} class="ylab">↓ {r.chart.yBottom}</text>
+          {methods.map((m) => (
+            <g class={`series s-${m}`} data-method={m}>
+              <path d={path((data.drift as any)[m][initialKey])} class="line" />
+              {(data.drift as any)[m][initialKey].map((v: number, i: number) => (
+                <circle cx={x(i)} cy={y(v)} r={m === 'rag' ? 5 : 4} class="pt">
+                  <title>{`${(r.methods as any)[m]}, ${r.chart.round} ${i + 1}: ${v.toFixed(2)}`}</title>
+                </circle>
+              ))}
+            </g>
+          ))}
+        </svg>
+      </div>
+      <ul class="keys mono">
+        {methods.map((m) => (
+          <li><svg width="28" height="10" aria-hidden="true"><line x1="0" x2="28" y1="5" y2="5" class={`key-line s-${m}`} /></svg>{(r.methods as any)[m]}</li>
+        ))}
+      </ul>
+      <figcaption>{r.chart.caption}</figcaption>
+
+      <div class="metrics">
+        <div class="metrics-head">
+          <div class="seg" role="group" aria-label={r.chart.mode} data-filter="mode">
+            <span class="seg-label mono">{r.chart.mode}</span>
+            <button type="button" data-value="polarity" aria-pressed="true">{r.chart.polarity}</button>
+            <button type="button" data-value="strict" aria-pressed="false">{r.chart.strict}</button>
+          </div>
+          <span class="mono n" id="metrics-n">n = {(data.metrics as any).rag[initialKey].n} {r.chart.debates}</span>
+        </div>
+        <div class="table-box">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col"><span class="sr-only">{r.chart.method}</span></th>
+                {metricKeys.map((k) => <th scope="col"><span class="long">{r.metrics[k].name}</span><abbr class="short" title={r.metrics[k].name}>{short[k]}</abbr></th>)}
+              </tr>
+            </thead>
+            <tbody>
+              {methods.map((m) => (
+                <tr>
+                  <th scope="row"><i class={`sw sw-${m}`} aria-hidden="true"></i>{(r.methods as any)[m]}</th>
+                  {metricKeys.map((k) => {
+                    const v = (data.metrics as any)[m][initialKey].polarity[k];
+                    const isBest = v === best(k, 'polarity');
+                    return (
+                      <td data-method={m} data-metric={k} class={isBest ? 'best' : ''}>
+                        {fmt(v)}
+                        {isBest && <span class="sr-only"> ({r.chart.best})</span>}
+                      </td>
+                    );
+                  })}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <ul class="defs">
+          {metricKeys.map((k) => <li><strong>{r.metrics[k].name} ({short[k]}):</strong> {r.metrics[k].help}</li>)}
+        </ul>
+      </div>
+    </figure>
+  </div>
+
+  <div class="takeaways">
+    <div>
+      <h3>{r.findingsTitle}</h3>
+      <ul class="findings">
+        {r.findings.map((f) => <li>{f}</li>)}
+      </ul>
+    </div>
+    <div>
+      <h3>{r.trustTitle}</h3>
+      <p>{r.trust}</p>
+    </div>
+  </div>
+
+  <ul class="chips stack">
+    {r.chips.map((c) => <li class="chip">{c}</li>)}
+  </ul>
+  <div class="actions">
+    <a class="btn" href={links.thesisRepo}>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"></path></svg>
+      {r.code}
+    </a>
+    <a class="btn" href={links.thesisPdf}>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><path d="M14 3v6h6"></path></svg>
+      {r.pdf}
+    </a>
+  </div>
+
+  <script type="application/json" id="thesis-data" set:html={JSON.stringify({ drift: data.drift, metrics: data.metrics, i18n })}></script>
+</section>
+
+<style>
+  .sub {
+    margin: 0;
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: 20px;
+    align-items: start;
+  }
+  figure {
+    margin: 0;
+  }
+  .card {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+  .card-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  h3 {
+    margin: 0;
+    font-size: 19px;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+  }
+  figcaption {
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--muted);
+  }
+  .btn-sm {
+    min-height: 44px;
+    padding: 0 14px;
+    font-size: 14px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 16px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .legend span {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .sw {
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+    display: inline-block;
+    flex: none;
+  }
+
+  /* Replay */
+  .rounds {
+    list-style: none;
+    margin: 0;
+    padding: 16px;
+    border-radius: 12px;
+    background: var(--bg);
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 10px;
+  }
+  .rd {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .bub {
+    height: 34px;
+    display: grid;
+    place-items: center;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 500;
+  }
+  .bub-a {
+    width: 92%;
+    background: var(--accent);
+    color: var(--on-accent);
+    border-radius: 8px 8px 8px 2px;
+  }
+  .bub-a.off {
+    background: var(--warn);
+    color: #fff;
+  }
+  :global(:root[data-theme='dark']) .bub-a.off {
+    color: #1a0d03;
+  }
+  .bub-b {
+    width: 92%;
+    align-self: flex-end;
+    background: var(--neutral);
+    color: var(--ink);
+    border-radius: 8px 8px 2px 8px;
+  }
+  .judge {
+    align-self: center;
+    margin-top: 4px;
+    width: 24px;
+    height: 24px;
+    border-radius: 999px;
+    border: 1.5px solid var(--ink);
+    display: grid;
+    place-items: center;
+  }
+  .judge.off {
+    border-color: var(--warn);
+    color: var(--warn);
+  }
+  .r {
+    text-align: center;
+    font-size: 11px;
+    color: var(--muted);
+  }
+  /* Replay animation: one orchestrated reveal, rerun with the button */
+  .replay.play .rd {
+    animation: turn-in 0.5s ease-out both;
+    animation-delay: calc(var(--i) * 0.55s);
+  }
+  .replay.play .rd .bub-b {
+    animation: turn-in 0.4s ease-out both;
+    animation-delay: calc(var(--i) * 0.55s + 0.2s);
+  }
+  @keyframes turn-in {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  /* Chart */
+  .controls {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .seg {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+  }
+  .seg-label {
+    font-size: 12px;
+    color: var(--muted);
+    min-width: 92px;
+  }
+  .seg button {
+    min-height: 36px;
+    padding: 0 12px;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    background: transparent;
+    color: var(--muted);
+    font: inherit;
+    font-size: 13.5px;
+    cursor: pointer;
+  }
+  .seg button:hover {
+    color: var(--ink);
+    border-color: var(--ink);
+  }
+  .seg button[aria-pressed='true'] {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: var(--bg);
+  }
+  .svg-box {
+    overflow-x: auto;
+    position: relative;
+  }
+  .plot {
+    width: 100%;
+    min-width: 420px;
+    height: auto;
+    display: block;
+  }
+  :global(.plot .gridline) {
+    stroke: var(--line);
+    stroke-width: 1;
+  }
+  :global(.plot .axis0) {
+    stroke: var(--muted);
+    stroke-width: 1;
+    stroke-dasharray: 3 4;
+  }
+  :global(.plot .tick) {
+    fill: var(--muted);
+    font-family: var(--font-mono);
+    font-size: 11px;
+  }
+  :global(.plot .ylab) {
+    fill: var(--muted);
+    font-size: 12px;
+  }
+  :global(.plot .line) {
+    fill: none;
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: d 0.45s ease;
+  }
+  :global(.plot .pt) {
+    stroke: var(--surface);
+    stroke-width: 2;
+    transition: cy 0.45s ease;
+  }
+  :global(.s-prompting .line),
+  :global(.key-line.s-prompting) {
+    stroke: var(--m-prompting);
+    stroke-dasharray: 7 5;
+  }
+  :global(.s-prompting .pt) {
+    fill: var(--m-prompting);
+  }
+  :global(.s-rag .line),
+  :global(.key-line.s-rag) {
+    stroke: var(--m-rag);
+    stroke-width: 3.5;
+  }
+  :global(.s-rag .pt) {
+    fill: var(--m-rag);
+  }
+  :global(.s-lora .line),
+  :global(.key-line.s-lora) {
+    stroke: var(--m-lora);
+    stroke-dasharray: 1 6;
+  }
+  :global(.s-lora .pt) {
+    fill: var(--m-lora);
+  }
+  :global(.key-line) {
+    stroke-width: 3;
+    stroke-linecap: round;
+  }
+  .keys {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 18px;
+    font-size: 12.5px;
+  }
+  .keys li {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .sw-prompting {
+    background: var(--m-prompting);
+  }
+  .sw-rag {
+    background: var(--m-rag);
+  }
+  .sw-lora {
+    background: var(--m-lora);
+  }
+
+  .metrics {
+    border-top: 1px solid var(--line);
+    padding-top: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .metrics-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .n {
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .table-box {
+    overflow-x: auto;
+    position: relative;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    min-width: 420px;
+  }
+  th,
+  td {
+    text-align: right;
+    padding: 10px 8px;
+    border-bottom: 1px solid var(--line);
+    white-space: nowrap;
+  }
+  thead th {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--muted);
+  }
+  .short {
+    display: none;
+    text-decoration: none;
+  }
+  tbody th {
+    text-align: left;
+    font-weight: 500;
+  }
+  tbody th .sw {
+    margin-right: 8px;
+  }
+  td {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    color: var(--muted);
+  }
+  td.best {
+    color: var(--ink);
+    font-weight: 600;
+  }
+  td.best::after {
+    content: '';
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    margin-left: 6px;
+    border-radius: 999px;
+    background: var(--accent);
+    vertical-align: middle;
+  }
+  .defs {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+  .defs strong {
+    color: var(--ink);
+    font-weight: 500;
+  }
+
+  .takeaways {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px 48px;
+    margin-top: 40px;
+  }
+  .takeaways h3 {
+    margin-bottom: 10px;
+  }
+  .takeaways p,
+  .findings {
+    margin: 0;
+    color: var(--muted);
+    font-size: 16px;
+    line-height: 1.6;
+    max-width: 60ch;
+  }
+  .findings {
+    padding-left: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .stack {
+    margin-top: 28px;
+  }
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 20px;
+  }
+
+  @media (max-width: 960px) {
+    .grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+  @media (max-width: 640px) {
+    .card {
+      padding: 18px;
+    }
+    .takeaways {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .rounds {
+      padding: 10px;
+      gap: 6px;
+    }
+    .bub {
+      height: 30px;
+      font-size: 12px;
+    }
+    .seg-label {
+      min-width: 100%;
+    }
+    .plot {
+      min-width: 0;
+    }
+    table {
+      min-width: 0;
+    }
+    .long {
+      display: none;
+    }
+    .short {
+      display: inline;
+    }
+    th,
+    td {
+      padding-inline: 4px;
+    }
+    :global(.plot .tick) {
+      font-size: 18px;
+    }
+    :global(.plot .ylab) {
+      font-size: 19px;
+    }
+  }
+</style>
+
+<script>
+  type Mode = 'polarity' | 'strict';
+  const el = document.getElementById('thesis-data');
+  if (el) {
+    const { drift, metrics, i18n } = JSON.parse(el.textContent || '{}');
+    const methods = ['prompting', 'rag', 'lora'] as const;
+    const W = 640, H = 330, L = 44, R = 36, T = 36, B = 40;
+    const x = (i: number) => L + (i * (W - L - R)) / 4;
+    const y = (v: number) => T + ((2 - v) * (H - T - B)) / 4;
+    const path = (vals: number[]) => vals.map((v, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(' ');
+    const fmt = (n: number) => (i18n.lang === 'nl' ? n.toFixed(2).replace('.', ',') : n.toFixed(2));
+
+    const state = { topic: 'all', stance: 'all', mode: 'polarity' as Mode };
+
+    const render = () => {
+      const key = `${state.topic}|${state.stance}`;
+      for (const m of methods) {
+        const g = document.querySelector(`.series[data-method="${m}"]`);
+        if (!g) continue;
+        const vals: number[] = drift[m][key];
+        g.querySelector('.line')?.setAttribute('d', path(vals));
+        g.querySelectorAll('circle').forEach((c, i) => {
+          c.setAttribute('cy', y(vals[i]).toFixed(1));
+          const title = c.querySelector('title');
+          if (title) title.textContent = `${i18n.methods[m]}, ${i18n.round} ${i + 1}: ${vals[i].toFixed(2)}`;
+        });
+      }
+      for (const k of ['tof', 'nof', 'ostc'] as const) {
+        const vals = methods.map((m) => metrics[m][key][state.mode][k] as number);
+        const best = k === 'tof' ? Math.max(...vals) : Math.min(...vals);
+        methods.forEach((m, idx) => {
+          const td = document.querySelector(`td[data-method="${m}"][data-metric="${k}"]`);
+          if (!td) return;
+          const isBest = vals[idx] === best;
+          td.className = isBest ? 'best' : '';
+          td.innerHTML = '';
+          td.append(fmt(vals[idx]));
+          if (isBest) {
+            const sr = document.createElement('span');
+            sr.className = 'sr-only';
+            sr.textContent = ` (${i18n.best})`;
+            td.append(sr);
+          }
+        });
+      }
+      const n = document.getElementById('metrics-n');
+      if (n) n.textContent = `n = ${metrics.rag[key].n} ${i18n.debates}`;
+    };
+
+    document.querySelectorAll<HTMLElement>('#drift .seg').forEach((seg) => {
+      const filter = seg.dataset.filter as keyof typeof state;
+      seg.addEventListener('click', (e) => {
+        const btn = (e.target as HTMLElement).closest('button');
+        if (!btn) return;
+        seg.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
+        (state as any)[filter] = btn.dataset.value;
+        render();
+      });
+    });
+  }
+
+  // Debate replay: plays once when scrolled into view, and again on demand.
+  const replay = document.getElementById('replay');
+  const replayBtn = document.getElementById('replay-btn');
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const play = () => {
+    if (!replay || reduce) return;
+    replay.classList.remove('play');
+    void replay.offsetWidth; // restart the CSS animation
+    replay.classList.add('play');
+  };
+  replayBtn?.addEventListener('click', play);
+  if (replay && 'IntersectionObserver' in window && !reduce) {
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((en) => en.isIntersecting)) {
+          play();
+          io.disconnect();
+        }
+      },
+      { threshold: 0.5 }
+    );
+    io.observe(replay);
+  }
+</script>
